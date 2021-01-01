@@ -400,24 +400,21 @@ void App::main_loop() {
 	auto frame_begin_time = std::chrono::system_clock::now(); // Frame start time is now.
 	auto frame_end_time = frame_begin_time + casted_fps_limit; // Next frame will be in (time it took to process this frame) + 1000/FPS_LIMIT milliseconds.
 
-	/* Uncomment this and the part inside the loop below
+
 	unsigned int frame_count_per_second = 0;
 	auto previous_time_in_seconds = std::chrono::time_point_cast<std::chrono::seconds>(frame_begin_time);
-	*/
 
 	while (app_active) {
-		if (std::chrono::system_clock::now() < frame_end_time) // If it's not the time for the next frame, skip.
-			continue;
-		else { // If it *is* the time for the next frame, process.
-			frame_begin_time = std::chrono::system_clock::now();
-			frame_end_time = frame_begin_time + casted_fps_limit;
-		}
+		if (std::chrono::system_clock::now() < frame_end_time) // If it's not the time for the next frame, wait until we're there.
+			std::this_thread::sleep_until(frame_end_time);
+
+		frame_begin_time = std::chrono::system_clock::now();
+		frame_end_time = frame_begin_time + casted_fps_limit;
 
 		handle_events();
 		update();
 		render();
 		
-		/* Uncomment this and the part above to get reported of the frame rate every second.
 		auto time_in_seconds = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
 		++frame_count_per_second;
 		if (time_in_seconds > previous_time_in_seconds) {
@@ -425,7 +422,6 @@ void App::main_loop() {
 			frame_count_per_second = 0;
 			previous_time_in_seconds = time_in_seconds;
 		}
-		*/
 	}
 }
 
