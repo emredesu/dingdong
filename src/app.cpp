@@ -394,7 +394,7 @@ void App::render() {
 }
 
 void App::main_loop() {
-	// Implementation of FPS lock using chrono without any blocks.
+	// Implementation of FPS lock using chrono.
 	using dsec = std::chrono::duration<double>;
 	auto casted_fps_limit = std::chrono::round<std::chrono::system_clock::duration>(dsec{ 1. / FPS_LIMIT }); // How many milliseconds will we wait for the next frame?
 	auto frame_begin_time = std::chrono::system_clock::now(); // Frame start time is now.
