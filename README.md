@@ -5,7 +5,8 @@ It only runs on Windows as it uses a lot of Windows-only functions, not to menti
 
 <b> To build, you'll need: </b>
 - C++17
-- SDL
+- [SDL](https://www.libsdl.org)
 - WSA
+- [Discord Game SDK](https://discord.com/developers/docs/game-sdk/sdk-starter-guide)
 - sprites and sounds!!
 - [dogicapixelbold by Roberto Mocci](https://www.dafont.com/dogica.font)
