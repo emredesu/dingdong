@@ -45,6 +45,71 @@ bool App::initialize_sdl_subsystems() {
 	return true;
 }
 
+DiscordManager::DiscordManager() {
+	DiscordCreateParams discord_params;
+
+	discord_params.client_id = app_client_id;
+	discord_params.flags = DiscordCreateFlags_NoRequireDiscord; // Allows app to be run in case Discord is not installed.
+	discord_params.events = &events;
+	discord_params.event_data = nullptr;
+
+	if (DiscordCreate(DISCORD_VERSION, &discord_params, &core) != DiscordResult_Ok)
+		std::cerr << "Discord initialization failed. Discord is either not installed or not running. Not using DiscordRPC.";
+	else {
+		std::cout << "Discord initialization is successful.";
+		activity_manager = core->get_activity_manager(core);
+	}
+}
+
+void DiscordManager::update_rpc(AppState app_state, GameMode game_mode) {
+	if (!core)
+		return;
+
+	core->run_callbacks(core);
+
+	std::string app_state_str;
+	std::string game_mode_str;
+
+	switch (app_state) {
+	case AppState::MAIN_MENU:
+		app_state_str = "Main menu";
+		game_mode_str = "Not in-game";
+		break;
+	case AppState::IN_GAME:
+		app_state_str = "In game";
+		break;
+	}
+
+	if (app_state == AppState::IN_GAME) {
+		switch (game_mode) {
+		case GameMode::LOCAL_MULTIPLAYER:
+			game_mode_str = "Playing local multiplayer";
+			break;
+		case GameMode::ONLINE_MULTIPLAYER:
+			game_mode_str = "Playing online multiplayer";
+			break;
+		case GameMode::PRACTICE:
+			game_mode_str = "Playing practice";
+			break;
+		case GameMode::SINGLE_PLAYER:
+			game_mode_str = "Playing single player";
+			break;
+		default:
+			game_mode_str = "Not in-game";
+			break;
+		}
+	}
+
+	DiscordActivity activity;
+	memset(&activity, 0, sizeof(activity));
+
+	strncpy_s(activity.details, app_state_str.c_str(), sizeof(activity.details));
+	strncpy_s(activity.state, game_mode_str.c_str(), sizeof(activity.state));
+	strncpy_s(activity.assets.large_image, "iconlarge", sizeof(activity.assets.large_image));
+
+	activity_manager->update_activity(activity_manager, &activity, nullptr, nullptr);
+}
+
 void App::quit_all_subsystems() {
 	Mix_Quit();
 	TTF_Quit();
@@ -307,6 +372,8 @@ void App::handle_events() {
 	if (app_state == AppState::IN_GAME) {
 		game.tick();
 	}
+
+	discord_manager.update_rpc(app_state, game.game_mode);
 }
 
 void App::update() {

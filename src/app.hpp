@@ -11,6 +11,7 @@
 #include <winsock2.h>
 #include <Windows.h>
 #include <SDL.h>
+#include <discord.h>
 #include "game.hpp"
 #include "mainmenu.hpp"
 #include "sdl_garbage_collector.hpp"
@@ -19,6 +20,18 @@ enum class AppState {
 	DUMMY_VALUE,
 	MAIN_MENU,
 	IN_GAME
+};
+
+class DiscordManager {
+	private:
+		int64_t app_client_id = 799984524766478336;
+	public:
+		IDiscordCore* core = nullptr;
+		IDiscordActivityManager* activity_manager = nullptr;
+		IDiscordCoreEvents events = nullptr;
+
+		DiscordManager();
+		void update_rpc(AppState app_state, GameMode game_mode);
 };
 
 class App {
@@ -40,6 +53,8 @@ class App {
 		MainMenu main_menu;
 
 		AppState app_state = AppState::MAIN_MENU;
+
+		DiscordManager discord_manager;
 
 		App();
 		bool initialize_sdl_subsystems();
