@@ -1,5 +1,6 @@
 # dingdong
 dingdong is a Pong clone with multiplayer capabilities!!!!!!!!!!!!!!!!!
+[View the game on itch.io!](https://emredesu.itch.io/dingdong)
 
 It only runs on Windows as it uses a lot of Windows-only functions, not to mention its multiplayer was built using Winsock2.
 
